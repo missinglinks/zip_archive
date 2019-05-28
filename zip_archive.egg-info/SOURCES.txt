@@ -1,9 +1,0 @@
-README.md
-setup.py
-zip_archive/__init__.py
-zip_archive/zip_archive.py
-zip_archive.egg-info/PKG-INFO
-zip_archive.egg-info/SOURCES.txt
-zip_archive.egg-info/dependency_links.txt
-zip_archive.egg-info/requires.txt
-zip_archive.egg-info/top_level.txt
