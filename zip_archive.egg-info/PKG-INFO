@@ -1,0 +1,28 @@
+Metadata-Version: 1.1
+Name: zip-archive
+Version: 1.0.0
+Summary: A light zip archive class for storing text and json files.
+Home-page: https://github.com/missinglinks/zip_archive
+Author: P. Mühleder
+Author-email: pmuehleder@uni-leipzig.de
+License: MIT
+Description: UNKNOWN
+Keywords: zip,archive,text,json,storage
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Environment :: Console
+Classifier: Environment :: Web Environment
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Information Technology
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Natural Language :: English
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: Implementation :: PyPy
+Classifier: Topic :: Scientific/Engineering
+Classifier: Topic :: Scientific/Engineering :: Information Analysis
+Classifier: Topic :: System :: Logging
