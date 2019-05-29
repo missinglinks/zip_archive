@@ -9,19 +9,23 @@ from .. import ZipArchive
 import pytest
 from pathlib import Path
 
+
 ARCHIVE = "test.zip"
 
-@pytest.fixture(scope="function")
+
+@pytest.fixture
 def archive_filepath(tmp_path_factory):
-    base_path = tmp_path_factory.getbasetemp()
-    return base_path / ARCHIVE
+    a_path = tmp_path_factory.getbasetemp() / ARCHIVE
+    yield a_path
+    a_path.unlink()
+
 
 def test_create_new_archive(archive_filepath):
     print(archive_filepath)
     archive = ZipArchive(archive_filepath)
     files_in_archive = [ f for f in archive ]
     assert len(files_in_archive) == 0
-    archive_filepath.unlink()
+
 
 def test_store_txt_file(archive_filepath):
     archive = ZipArchive(archive_filepath)
@@ -31,7 +35,7 @@ def test_store_txt_file(archive_filepath):
     for f in archive:
         read_string = archive.get(f)
         assert read_string == test_string
-    archive_filepath.unlink()
+
 
 def test_json_txt_file(archive_filepath):
     archive = ZipArchive(archive_filepath)
@@ -40,14 +44,14 @@ def test_json_txt_file(archive_filepath):
 
     read_json = archive.get("test.json")
     assert read_json["a"] == test_json["a"]
-    archive_filepath.unlink()
+
 
 def test_add_none_file(archive_filepath):
     archive = ZipArchive(archive_filepath)
     test = None
     with pytest.raises(TypeError):
         archive.add("test.json", test)
-    archive_filepath.unlink()        
+
 
 def test_add_same_filename_twice(archive_filepath):
     archive = ZipArchive(archive_filepath)
@@ -58,7 +62,7 @@ def test_add_same_filename_twice(archive_filepath):
     test = "def"
     with pytest.raises(FileExistsError):
         archive.add("test.txt", test)
-    archive_filepath.unlink()
+
 
 def test_append_to_existing_archive(archive_filepath):
     archive = ZipArchive(archive_filepath)
@@ -72,8 +76,6 @@ def test_append_to_existing_archive(archive_filepath):
 
     files_in_archive1 = [ f for f in archive ]
     assert files_in_archive1 == ["test.txt", "test2.json"]
-
-    archive_filepath.unlink()
 
 
 def test_iter_files(archive_filepath):
