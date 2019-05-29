@@ -98,6 +98,18 @@ def test_iter_files(archive_filepath):
     archive.add("test2.txt", "def")
     assert joinread(archive) == "abcdef"
 
+def test_custom_json_ext(archive_filepath):
+    archive = ZipArchive(archive_filepath, json_ext=".foo")
+    archive["bar.foo"] = [1,2,3]
+    archive["bar.json"] = [1,2,3]
+    assert archive["bar.foo"] == [1,2,3]
+    assert archive["bar.json"] == "[\n    1,\n    2,\n    3\n]"
+
+def test_custom_indent(archive_filepath):
+    archive = ZipArchive(archive_filepath, json_indent=6)
+    archive["foo.txt"] = [1,2,3]
+    assert archive["foo.txt"] == "[\n      1,\n      2,\n      3\n]"
+
 
 def test_contains(archive_filepath):
     archive = ZipArchive(archive_filepath)

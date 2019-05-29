@@ -25,13 +25,17 @@ import zipfile
 import json
 from pathlib import Path
 
+
 class ZipArchive:
 
-    def __init__(self, filepath, overwrite=False):
+    def __init__(self, filepath, overwrite=False, json_ext=".json", json_indent=4):
         self.filepath = filepath
         self.overwrite = overwrite
         with self._archive:
             self.overwrite = False
+
+        self.json_ext = json_ext
+        self.json_indent = json_indent
 
     @property
     def mode(self):
@@ -46,7 +50,7 @@ class ZipArchive:
         Add data (str, data or list) to zip file.
         """
         if isinstance(data, list) or isinstance(data, dict):
-            data = json.dumps(data, indent=4)
+            data = json.dumps(data, indent=self.json_indent)
         elif not isinstance(data, str):
             raise TypeError("ZipArchive only supports datatypes string, list and dict")
 
@@ -64,7 +68,7 @@ class ZipArchive:
         with self._archive as archive:
             data = archive.read(filepath)
 
-        if filepath.endswith(".json"):
+        if filepath.endswith(self.json_ext):
             return json.loads(data.decode("utf-8"))
         else:
             return data.decode("utf-8")       
