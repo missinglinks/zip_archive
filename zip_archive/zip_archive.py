@@ -23,35 +23,41 @@ y = z.get("y.json")
 
 import zipfile
 import json
-import os
+from pathlib import Path
 
-class ZipArchive(zipfile.ZipFile):
 
-    def __init__(self, filepath, overwrite=False):
+class ZipArchive:
+
+    def __init__(self, filepath, overwrite=False, json_ext=".json", json_indent=4):
         self.filepath = filepath
         self.overwrite = overwrite
-        if not os.path.exists(self.filepath) or self.overwrite:
-            archive = zipfile.ZipFile(self.filepath, "w", zipfile.ZIP_DEFLATED)
-        else:
-            archive = zipfile.ZipFile(self.filepath, "a", zipfile.ZIP_DEFLATED)
-        archive.close()
+        with self._archive:
+            self.overwrite = False
 
-    def _open(self):
-        return zipfile.ZipFile(self.filepath, "a", zipfile.ZIP_DEFLATED)
+        self.json_ext = json_ext
+        self.json_indent = json_indent
+
+    @property
+    def mode(self):
+        return "a" if not self.overwrite else "w"
+
+    @property
+    def _archive(self):
+        return zipfile.ZipFile(self.filepath, self.mode, zipfile.ZIP_DEFLATED)
 
     def add(self, filepath, data):
         """
         Add data (str, data or list) to zip file.
         """
         if isinstance(data, list) or isinstance(data, dict):
-            data = json.dumps(data, indent=4)
+            data = json.dumps(data, indent=self.json_indent)
         elif not isinstance(data, str):
             raise TypeError("ZipArchive only supports datatypes string, list and dict")
 
         if self.contains(filepath):
             raise FileExistsError('Filename already in archive')
 
-        with self._open() as archive:
+        with self._archive as archive:
             archive.writestr(filepath, data)    
         
 
@@ -59,10 +65,10 @@ class ZipArchive(zipfile.ZipFile):
         """
         Reads (text-)file from zip file.
         """
-        with self._open() as archive:
+        with self._archive as archive:
             data = archive.read(filepath)
 
-        if filepath.endswith(".json"):
+        if filepath.endswith(self.json_ext):
             return json.loads(data.decode("utf-8"))
         else:
             return data.decode("utf-8")       
@@ -71,7 +77,7 @@ class ZipArchive(zipfile.ZipFile):
         """
         Check if zip file contains file :filepath:
         """
-        with self._open() as archive:
+        with self._archive as archive:
             filelist = archive.namelist()
         
         if filepath in filelist:
@@ -79,8 +85,14 @@ class ZipArchive(zipfile.ZipFile):
         else:
             return False
 
+    def __getitem__(self, key):
+        return self.get(key)
+
+    def __setitem__(self, key, value):
+        self.add(key, value)
+
     def __iter__(self):
-        with self._open() as archive:
+        with self._archive as archive:
             namelist = archive.namelist()
 
         for filename in namelist:
