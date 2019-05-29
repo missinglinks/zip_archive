@@ -1,1 +1,2 @@
-setuptools==40.6.3
+setuptools==36.5.0
+pytest==4.5.0

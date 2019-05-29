@@ -27,11 +27,11 @@ $ pip install .
 
 from zip_archive import ZipArchive
 
-z = ZipArchive('test.zip')
+z = ZipArchive("test.zip")
 
-y = { 'a': "bc" }
+y = { "a": "bc" }
 
-if not z.contains('y.json'):
+if not z.contains("y.json"):
     z.add("y.json", y)
 
 y = z.get("y.json")
