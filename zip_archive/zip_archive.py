@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# coding: utf-8
+
 """
 Simple Zip archvie.
 Writes json/text files into zip file.
@@ -43,10 +46,14 @@ class ZipArchive(zipfile.ZipFile):
         if isinstance(data, list) or isinstance(data, dict):
             data = json.dumps(data, indent=4)
         elif not isinstance(data, str):
-            raise TypeError("Ziparchive only supports datatypes string, list and dict")
-        archive = self._open()
-        archive.writestr(filepath, data)    
-        archive.close()
+            raise TypeError("ZipArchive only supports datatypes string, list and dict")
+
+        if self.contains(filepath):
+            raise FileExistsError('Filename already in archive')
+
+        with self._open() as archive:
+            archive.writestr(filepath, data)    
+        
 
     def get(self, filepath):
         """
