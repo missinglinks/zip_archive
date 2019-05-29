@@ -23,21 +23,23 @@ y = z.get("y.json")
 
 import zipfile
 import json
-import os
+from pathlib import Path
 
 class ZipArchive:
 
     def __init__(self, filepath, overwrite=False):
         self.filepath = filepath
         self.overwrite = overwrite
-        if not os.path.exists(self.filepath) or self.overwrite:
-            archive = zipfile.ZipFile(self.filepath, "w", zipfile.ZIP_DEFLATED)
-        else:
-            archive = zipfile.ZipFile(self.filepath, "a", zipfile.ZIP_DEFLATED)
-        archive.close()
+        with self._archive:
+            self.overwrite = False
 
-    def _open(self):
-        return zipfile.ZipFile(self.filepath, "a", zipfile.ZIP_DEFLATED)
+    @property
+    def mode(self):
+        return "a" if not self.overwrite else "w"
+
+    @property
+    def _archive(self):
+        return zipfile.ZipFile(self.filepath, self.mode, zipfile.ZIP_DEFLATED)
 
     def add(self, filepath, data):
         """
@@ -51,7 +53,7 @@ class ZipArchive:
         if self.contains(filepath):
             raise FileExistsError('Filename already in archive')
 
-        with self._open() as archive:
+        with self._archive as archive:
             archive.writestr(filepath, data)    
         
 
@@ -59,7 +61,7 @@ class ZipArchive:
         """
         Reads (text-)file from zip file.
         """
-        with self._open() as archive:
+        with self._archive as archive:
             data = archive.read(filepath)
 
         if filepath.endswith(".json"):
@@ -71,7 +73,7 @@ class ZipArchive:
         """
         Check if zip file contains file :filepath:
         """
-        with self._open() as archive:
+        with self._archive as archive:
             filelist = archive.namelist()
         
         if filepath in filelist:
@@ -86,7 +88,7 @@ class ZipArchive:
         self.add(key, value)
 
     def __iter__(self):
-        with self._open() as archive:
+        with self._archive as archive:
             namelist = archive.namelist()
 
         for filename in namelist:

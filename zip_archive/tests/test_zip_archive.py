@@ -77,17 +77,26 @@ def test_append_to_existing_archive(archive_filepath):
     files_in_archive1 = [ f for f in archive ]
     assert files_in_archive1 == ["test.txt", "test2.json"]
 
+def joinread(archive):
+    contents = []
+    for data in archive.iter_files():
+        contents.append(data)
+    return "".join(contents)
+
+def test_overwrite(archive_filepath):
+    archive = ZipArchive(archive_filepath)
+    archive.add("test.txt", "abc")
+    archive = ZipArchive(archive_filepath, overwrite=True)
+    assert "test.txt" not in archive
+    archive.add("test.txt", "abc")
+    archive.add("test2.txt", "def")
+    assert joinread(archive) == "abcdef"
 
 def test_iter_files(archive_filepath):
     archive = ZipArchive(archive_filepath)
     archive.add("test.txt", "abc")
     archive.add("test2.txt", "def")
-
-    read = []
-    for data in archive.iter_files():
-        read.append(data)
-
-    assert "".join(read) == "abcdef"
+    assert joinread(archive) == "abcdef"
 
 
 def test_contains(archive_filepath):
