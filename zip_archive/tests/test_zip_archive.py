@@ -88,3 +88,16 @@ def test_iter_files(archive_filepath):
         read.append(data)
 
     assert "".join(read) == "abcdef"
+
+
+def test_contains(archive_filepath):
+    archive = ZipArchive(archive_filepath)
+    assert "test.json" not in archive
+    archive.add("test.json", "abc")
+    assert "test.json" in archive
+
+
+def test_getitem_setitem(archive_filepath):
+    archive = ZipArchive(archive_filepath)
+    archive["test.json"] = [1,2,3]
+    assert archive["test.json"] == [1,2,3]

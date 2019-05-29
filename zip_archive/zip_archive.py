@@ -25,7 +25,7 @@ import zipfile
 import json
 import os
 
-class ZipArchive(zipfile.ZipFile):
+class ZipArchive:
 
     def __init__(self, filepath, overwrite=False):
         self.filepath = filepath
@@ -78,6 +78,12 @@ class ZipArchive(zipfile.ZipFile):
             return True
         else:
             return False
+
+    def __getitem__(self, key):
+        return self.get(key)
+
+    def __setitem__(self, key, value):
+        self.add(key, value)
 
     def __iter__(self):
         with self._open() as archive:
